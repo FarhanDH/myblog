@@ -3,7 +3,6 @@
     "module": "CommonJS",
     "target": "es2016",
     "jsx": "preserve",
-    // "baseUrl": "./src",
     "checkJs": true
   },
   "exclude": ["node_modules", "**/node_modules/*"]
