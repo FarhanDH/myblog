@@ -17,7 +17,7 @@ export class PostsService {
     fs.rename(path, `uploads\\${parts[0]}` + '.' + ext);
 
     // save to db
-    const createdPost = new this.postModel({
+    const createdPost = await new this.postModel({
       title: createPostDto.title,
       summary: createPostDto.summary,
       content: createPostDto.content,
@@ -43,8 +43,40 @@ export class PostsService {
       .exec();
   }
 
-  update(id: number, updatePostDto: UpdatePostDto) {
-    return `This action updates a #${id} post`;
+  async update(
+    id: string,
+    req,
+    updatePostDto: UpdatePostDto,
+    file?: Express.Multer.File,
+  ) {
+    // check if the user is owner of the post
+    const checkPost = await this.getById(id);
+    if (checkPost.author.username === req.username) {
+      let newPath;
+      if (file) {
+        const { originalname, path } = file;
+        const parts = originalname.split('.');
+        const ext = parts[parts.length - 1];
+        newPath = `${parts[0]}` + '.' + ext;
+        fs.rename(path, `uploads\\${newPath}`);
+      }
+      // save to db
+      const updatedPost = await this.postModel
+        .findByIdAndUpdate(
+          id,
+          {
+            title: updatePostDto.title,
+            summary: updatePostDto.summary,
+            content: updatePostDto.content,
+            cover: newPath ? newPath : checkPost.cover,
+            author: req._id,
+          },
+          { new: true },
+        )
+        .exec();
+
+      return updatedPost;
+    }
   }
 
   remove(id: number) {

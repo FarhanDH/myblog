@@ -1,35 +1,7 @@
 import { useState } from 'react';
-import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import Editor from '../Editor';
 import { config } from '../config';
-
-const modules = {
-  toolbar: [
-    [{ header: [1, 2, false] }],
-    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-    [
-      { list: 'ordered' },
-      { list: 'bullet' },
-      { indent: '-1' },
-      { indent: '+1' },
-    ],
-    ['link', 'image'],
-    ['clean'],
-  ],
-};
-const formats = [
-  'header',
-  'bold',
-  'italic',
-  'underline',
-  'strike',
-  'blockquote',
-  'list',
-  'bullet',
-  'indent',
-  'link',
-  'image',
-];
 
 export default function CreatePost() {
   const [title, setTitle] = useState('');
@@ -84,12 +56,7 @@ export default function CreatePost() {
           )
         }
       />
-      <ReactQuill
-        modules={modules}
-        formats={formats}
-        value={content}
-        onChange={(newValue) => setContent(newValue)}
-      />
+      <Editor value={content} onChange={setContent} />
       <button style={{ marginTop: '10px' }} type="submit">
         Create Post
       </button>
