@@ -5,8 +5,8 @@ import {
   Get,
   Param,
   ParseFilePipeBuilder,
-  Patch,
   Post,
+  Put,
   Request,
   UploadedFile,
   UseGuards,
@@ -14,10 +14,10 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiResponse } from '~/common/apiResponse';
+import { JwtGuard } from '../auth/guards/jwt.guard';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostsService } from './posts.service';
-import { JwtGuard } from '../auth/guards/jwt.guard';
 
 @Controller('posts')
 export class PostsController {
@@ -72,9 +72,25 @@ export class PostsController {
     } satisfies ApiResponse<typeof post>;
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postsService.update(+id, updatePostDto);
+  @UseGuards(JwtGuard)
+  @Put(':id')
+  @UseInterceptors(FileInterceptor('file'))
+  async update(
+    @Param('id') id: string,
+    @Request() req,
+    @Body() updatePostDto: UpdatePostDto,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({
+          fileType: /(jpg|jpeg|png|svg|tiff|webp|gif)$/,
+        })
+        .addMaxSizeValidator({ maxSize: 1000000 })
+        .build({ fileIsRequired: false }),
+    )
+    file: Express.Multer.File,
+  ) {
+    console.log(req.user);
+    return await this.postsService.update(id, req.user, updatePostDto, file);
   }
 
   @Delete(':id')
