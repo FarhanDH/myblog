@@ -1,25 +1,33 @@
-export function Post() {
+import { format } from 'date-fns';
+import { config } from './config';
+import { Link } from 'react-router-dom';
+
+export function Post({
+  _id,
+  title,
+  summary,
+  cover,
+  content,
+  createdAt,
+  author,
+}) {
   return (
     <>
       <div className="post">
         <div className="image">
-          <img
-            src="https://i.pinimg.com/736x/59/9e/53/599e53032084b72fa762270a8f2649c7.jpg"
-            alt=""
-          />
+          <Link to={`/post/${_id}`}>
+            <img src={`http://localhost:9000/${cover}`} alt="" />
+          </Link>
         </div>
         <div className="texts">
-          <h2>Funny Monkey</h2>
+          <Link to={`/post/${_id}`}>
+            <h2>{title}</h2>
+          </Link>
           <p className="info">
-            <a className="author">John Doe</a>
-            <time>2022-10-10</time>
+            <a className="author">{author.username}</a>
+            <time>{format(new Date(createdAt), 'dd MMM yyyy HH:mm')}</time>
           </p>
-          <p className="summary">
-            California - Seekor monyet di Sulawesi, Indonesia yang sempat
-            menjadi pemberitaan karena foto selfie-nya sambil tersenyum,
-            dinobatkan sebagai 'Person of the Year' oleh kelompok internasional
-            pejuang hak binatang PETA.
-          </p>
+          <p className="summary">{summary}</p>
         </div>
       </div>
     </>

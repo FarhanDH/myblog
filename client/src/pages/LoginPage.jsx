@@ -18,9 +18,7 @@ export default function LoginPage() {
     console.log(response);
 
     if (response.statusCode !== 201) {
-      return alert(
-        'Login failed!. Please try with another username or password',
-      );
+      alert('Login failed!. Please try with another username or password');
     }
     setRedirect(true);
     if (redirect) {
